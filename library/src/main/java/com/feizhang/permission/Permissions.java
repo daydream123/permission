@@ -41,7 +41,7 @@ public class Permissions {
     }
 
     private PermissionsFragment getPermissionsFragment(@NonNull final FragmentManager fragmentManager) {
-        PermissionsFragment permissionsFragment = findPermissionsFragment(fragmentManager);
+        PermissionsFragment permissionsFragment = (PermissionsFragment) fragmentManager.findFragmentByTag(TAG);
         boolean isNewInstance = permissionsFragment == null;
         if (isNewInstance) {
             permissionsFragment = new PermissionsFragment();
@@ -51,10 +51,6 @@ public class Permissions {
                     .commitNow();
         }
         return permissionsFragment;
-    }
-
-    private PermissionsFragment findPermissionsFragment(@NonNull final FragmentManager fragmentManager) {
-        return (PermissionsFragment) fragmentManager.findFragmentByTag(TAG);
     }
 
     /**
@@ -170,7 +166,7 @@ public class Permissions {
     }
 
     @FunctionalInterface
-    public interface Lazy<V> {
+    interface Lazy<V> {
         V get();
     }
 
