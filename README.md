@@ -51,7 +51,7 @@ public void onRequestPermissionsResult(int requestCode,
 }
 ```
 
-An third-party library called RxPermission brings a new idea to simplify this job, but need to add dependencies of RxJava and RxAndroid into our project. After researching of this library, I found there is no need to use RxJava and RxAndroid, only acallback between requester and a none-ui fragemnt is enough. Passing grant result from none-ui fragment to requester by callback is the solution.
+An third-party library called RxPermission brings a new idea to simplify this job, but need to add dependencies of RxJava and RxAndroid into our project. After researching of this library, I found there is no need to use RxJava and RxAndroid, only a callback between requester and a none-ui fragemnt is enough. Passing grant result from none-ui fragment to requester by callback is the solution.
 
 The useage to request permissions is like below:
 
