@@ -24,35 +24,6 @@ public class Permissions {
         mPermissionsFragment = getLazySingleton(fragment.getChildFragmentManager());
     }
 
-    @NonNull
-    private Lazy<PermissionsFragment> getLazySingleton(@NonNull final FragmentManager fragmentManager) {
-        return new Lazy<PermissionsFragment>() {
-            private PermissionsFragment permissionsFragment;
-
-            @Override
-            public synchronized PermissionsFragment get() {
-                if (permissionsFragment == null) {
-                    permissionsFragment = getPermissionsFragment(fragmentManager);
-                    permissionsFragment.setLogging(true);
-                }
-                return permissionsFragment;
-            }
-        };
-    }
-
-    private PermissionsFragment getPermissionsFragment(@NonNull final FragmentManager fragmentManager) {
-        PermissionsFragment permissionsFragment = (PermissionsFragment) fragmentManager.findFragmentByTag(TAG);
-        boolean isNewInstance = permissionsFragment == null;
-        if (isNewInstance) {
-            permissionsFragment = new PermissionsFragment();
-            fragmentManager
-                    .beginTransaction()
-                    .add(permissionsFragment, TAG)
-                    .commitNow();
-        }
-        return permissionsFragment;
-    }
-
     /**
      * Request permissions immediately, <b>must be invoked during initialization phase
      * of your application</b>.
@@ -140,6 +111,35 @@ public class Permissions {
     private void requestPermissionsFromFragment(String[] permissions) {
         mPermissionsFragment.get().log("requestPermissionsFromFragment " + TextUtils.join(", ", permissions));
         mPermissionsFragment.get().requestPermissions(permissions);
+    }
+
+    @NonNull
+    private Lazy<PermissionsFragment> getLazySingleton(@NonNull final FragmentManager fragmentManager) {
+        return new Lazy<PermissionsFragment>() {
+            private PermissionsFragment permissionsFragment;
+
+            @Override
+            public synchronized PermissionsFragment get() {
+                if (permissionsFragment == null) {
+                    permissionsFragment = getPermissionsFragment(fragmentManager);
+                    permissionsFragment.setLogging(true);
+                }
+                return permissionsFragment;
+            }
+        };
+    }
+
+    private PermissionsFragment getPermissionsFragment(@NonNull final FragmentManager fragmentManager) {
+        PermissionsFragment permissionsFragment = (PermissionsFragment) fragmentManager.findFragmentByTag(TAG);
+        boolean isNewInstance = permissionsFragment == null;
+        if (isNewInstance) {
+            permissionsFragment = new PermissionsFragment();
+            fragmentManager
+                    .beginTransaction()
+                    .add(permissionsFragment, TAG)
+                    .commitNow();
+        }
+        return permissionsFragment;
     }
 
     /**

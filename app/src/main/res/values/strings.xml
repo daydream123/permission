@@ -1,5 +1,5 @@
 <resources>
     <string name="app_name">permission</string>
     <string name="request_each">requestEach</string>
-    <string name="request">request</string>
+    <string name="request">request permission once activity created</string>
 </resources>
