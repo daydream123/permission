@@ -24,10 +24,6 @@ public class PermissionsFragment extends Fragment {
     private boolean mLogging;
     private int mRequestCode = 100;
 
-    public static PermissionsFragment newInstance(){
-        return new PermissionsFragment();
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,7 +31,7 @@ public class PermissionsFragment extends Fragment {
     }
 
     void requestPermissions(@NonNull String[] permissions) {
-        requestPermissions(permissions, mRequestCode++);
+        requestPermissions(permissions, mRequestCode);
     }
 
     @Override
@@ -92,7 +88,7 @@ public class PermissionsFragment extends Fragment {
     }
 
     void setOnPermissionCallback(OnPermissionCallback onPermissionCallback){
-        mCallbackStorage.put(mRequestCode, onPermissionCallback);
+        mCallbackStorage.put(++mRequestCode, onPermissionCallback);
     }
 
     private OnPermissionCallback getMatchedPermissionCallback(int requestCode){
