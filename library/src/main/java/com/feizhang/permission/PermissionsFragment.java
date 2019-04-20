@@ -69,20 +69,22 @@ public class PermissionsFragment extends Fragment {
     boolean isGranted(String permission) {
         FragmentActivity fragmentActivity = getActivity();
         if (fragmentActivity == null) {
-            throw new IllegalStateException("This fragment must be attached to an activity.");
-        } else {
-            return fragmentActivity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
+            Log.e(TAG, "This fragment must be attached to an activity.");
+            return false;
         }
+
+        return fragmentActivity.checkSelfPermission(permission) == PackageManager.PERMISSION_GRANTED;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
     boolean isRevoked(String permission) {
         FragmentActivity fragmentActivity = getActivity();
         if (fragmentActivity == null) {
-            throw new IllegalStateException("This fragment must be attached to an activity.");
-        } else {
-            return fragmentActivity.getPackageManager().isPermissionRevokedByPolicy(permission, getActivity().getPackageName());
+            Log.e(TAG, "This fragment must be attached to an activity.");
+            return false;
         }
+
+        return fragmentActivity.getPackageManager().isPermissionRevokedByPolicy(permission, getActivity().getPackageName());
     }
 
     void setOnPermissionCallback(OnPermissionCallback onPermissionCallback){
