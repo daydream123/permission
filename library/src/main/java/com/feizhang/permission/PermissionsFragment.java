@@ -8,6 +8,7 @@ import android.support.annotation.RequiresApi;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+import android.util.SparseArray;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,11 +18,11 @@ import java.util.List;
  */
 public class PermissionsFragment extends Fragment {
     private static final String TAG = "PermissionsFragment";
-    public static final int PERMISSIONS_REQUEST_CODE = 9999;
 
-    private OnPermissionCallback mOnPermissionCallback;
+    private SparseArray<OnPermissionCallback> mCallbackStorage = new SparseArray<>();
     private List<String> mPermissions = new ArrayList<>();
     private boolean mLogging;
+    private int mRequestCode = 100;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -30,39 +31,40 @@ public class PermissionsFragment extends Fragment {
     }
 
     void requestPermissions(@NonNull String[] permissions) {
-        requestPermissions(permissions, PERMISSIONS_REQUEST_CODE);
+        requestPermissions(permissions, mRequestCode);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (requestCode == PERMISSIONS_REQUEST_CODE) {
+        if (requestCode == mRequestCode) {
             boolean[] shouldShowRequestPermissionRationale = new boolean[permissions.length];
 
             for(int i = 0; i < permissions.length; ++i) {
                 shouldShowRequestPermissionRationale[i] = shouldShowRequestPermissionRationale(permissions[i]);
             }
 
-            onRequestPermissionsResult(permissions, grantResults, shouldShowRequestPermissionRationale);
+            onRequestPermissionsResult(requestCode, permissions, grantResults, shouldShowRequestPermissionRationale);
         }
     }
 
-    private void onRequestPermissionsResult(String[] permissions, int[] grantResults, boolean[] shouldShowRequestPermissionRationale) {
+    private void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults, boolean[] shouldShowRequestPermissionRationale) {
         int i = 0;
 
+        OnPermissionCallback callback = getMatchedPermissionCallback(requestCode);
         for(int size = permissions.length; i < size; ++i) {
             log("onRequestPermissionsResult  " + permissions[i]);
-            if (mOnPermissionCallback == null) {
+            if (callback == null) {
                 Log.e(TAG, "Permissions.onRequestPermissionsResult invoked but didn't find the corresponding permission request.");
                 return;
             }
 
             mPermissions.remove(permissions[i]);
             boolean granted = grantResults[i] == PackageManager.PERMISSION_GRANTED;
-            mOnPermissionCallback.onNext(new Permission(permissions[i], granted, shouldShowRequestPermissionRationale[i]));
+            callback.onNext(new Permission(permissions[i], granted, shouldShowRequestPermissionRationale[i]));
         }
 
-        mOnPermissionCallback.onComplete();
+        callback.onComplete();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.M)
@@ -88,7 +90,11 @@ public class PermissionsFragment extends Fragment {
     }
 
     void setOnPermissionCallback(OnPermissionCallback onPermissionCallback){
-        mOnPermissionCallback = onPermissionCallback;
+        mCallbackStorage.put(++mRequestCode, onPermissionCallback);
+    }
+
+    private OnPermissionCallback getMatchedPermissionCallback(int requestCode){
+        return mCallbackStorage.get(requestCode);
     }
 
     boolean containsPermission(String permission){
